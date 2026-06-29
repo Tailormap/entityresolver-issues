@@ -32,7 +32,7 @@ class WFSGetFeatureControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.naam").value("Gelderland"))
                 .andExpect(jsonPath("$.code").value("25"))
-                .andExpect(jsonPath("$.geom").value("GEOMETRY (/* omitted */)"));
+                .andExpect(jsonPath("$.geom").doesNotExist());
     }
 
     @Test
@@ -43,6 +43,6 @@ class WFSGetFeatureControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.creationdate").isNotEmpty())
                 .andExpect(jsonPath("$.terminationdate").isEmpty())
-                .andExpect(jsonPath("$.geom").value("GEOMETRY (/* omitted */)"));
+                .andExpect(jsonPath("$.geom").value("POINT (130887.591 459392.138)"));
     }
 }

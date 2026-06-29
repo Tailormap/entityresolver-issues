@@ -44,5 +44,6 @@ public class WFSGetFeatureUtilTest {
         Map<String, String> feature = new WFSGetFeatureUtil(TM_WFS_URL).getOneFeature(TM_WFS_TYPE_NAME, null);
         assertNotNull(feature);
         logger.info(feature.toString());
+        assertNotNull(feature.get("geom"));
     }
 }

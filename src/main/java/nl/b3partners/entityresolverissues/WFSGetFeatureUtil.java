@@ -8,13 +8,16 @@ package nl.b3partners.entityresolverissues;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Property;
 import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.wfs.WFSDataStoreFactory;
@@ -70,24 +73,30 @@ public class WFSGetFeatureUtil {
             GeometryDescriptor geomAttr = ds.getSchema(typeName).getGeometryDescriptor();
             logger.info("Geometry attribute for type {}: {}", typeName, geomAttr);
 
+            // filter out the geometry attribute, unless it is a point, not needed for our demonstration and it could be
+            // overly verbose
+            if (geomAttr != null && !(geomAttr.getType().getBinding() == org.locationtech.jts.geom.Point.class)) {
+                List<String> attributeList = ds.getSchema(typeName).getAttributeDescriptors().stream()
+                        .map(AttributeDescriptor::getName)
+                        .filter(name -> !name.equals(geomAttr.getName()))
+                        .map(Name::getLocalPart)
+                        .toList();
+                q.setPropertyNames(attributeList);
+            }
+
             try (SimpleFeatureIterator it =
                     ds.getFeatureSource(typeName).getFeatures(q).features()) {
                 if (it.hasNext()) {
                     SimpleFeature feature = it.next();
-                    Map<String, String> attributes = new HashMap<>();
+                    Map<String, String> attributesMap = new HashMap<>();
                     for (Property property : feature.getProperties()) {
-                        if (property.getDescriptor() == geomAttr) {
-                            // Skip/replace geometry attribute value, as it might be too verbose
-                            attributes.put(property.getName().toString(), "GEOMETRY (/* omitted */)");
-                        } else {
-                            attributes.put(
-                                    property.getName().toString(),
-                                    property.getValue() != null
-                                            ? property.getValue().toString()
-                                            : null);
-                        }
+                        attributesMap.put(
+                                property.getName().toString(),
+                                property.getValue() != null
+                                        ? property.getValue().toString()
+                                        : null);
                     }
-                    return attributes;
+                    return attributesMap;
                 }
                 logger.info("No feature found for type {} and filter {}", typeName, cqlFilter);
                 return null;
