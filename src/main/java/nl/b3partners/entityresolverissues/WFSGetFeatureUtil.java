@@ -6,6 +6,7 @@
 package nl.b3partners.entityresolverissues;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
@@ -55,20 +56,23 @@ public class WFSGetFeatureUtil {
             q.setFilter(filter);
         }
 
+        Map<String, Serializable> parameters = Map.of(
+                WFSDataStoreFactory.URL.key,
+                this.capabilitiesUrl,
+                WFSDataStoreFactory.ENTITY_RESOLVER.key,
+                PreventLocalEntityResolver.INSTANCE,
+                WFSDataStoreFactory.TIMEOUT.key,
+                30000);
+
         DataStore ds = null;
         try {
-            ds = DataStoreFinder.getDataStore(Map.of(
-                    WFSDataStoreFactory.URL.key,
+            ds = DataStoreFinder.getDataStore(parameters);
+            logger.info(
+                    "DataStore created for WFS capabilities URL: {} using entity resolver {}",
                     this.capabilitiesUrl,
-                    WFSDataStoreFactory.ENTITY_RESOLVER.key,
-                    PreventLocalEntityResolver.INSTANCE,
-                    WFSDataStoreFactory.TRY_GZIP.key,
-                    true,
-                    WFSDataStoreFactory.TIMEOUT.key,
-                    30000));
+                    parameters.get(WFSDataStoreFactory.ENTITY_RESOLVER.key));
 
-            logger.info("DataStore created for WFS capabilities URL: {}", this.capabilitiesUrl);
-            logger.info("Found the following feature types: {}", (Object) ds.getTypeNames());
+            logger.info("Found the following WFS feature types: {}", (Object) ds.getTypeNames());
 
             GeometryDescriptor geomAttr = ds.getSchema(typeName).getGeometryDescriptor();
             logger.info("Geometry attribute for type {}: {}", typeName, geomAttr);
