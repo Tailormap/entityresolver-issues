@@ -28,4 +28,8 @@ jobs:
           with:
             maven-version: ${{ env.MAVEN_VERSION }}
         - name: 'Build with Maven'
-          run: mvn clean install
+          run: mvn clean install -DskipTests
+        - name: 'Run WFSGetFeatureUtilTest with Maven'
+          run: mvn test -Dtest=WFSGetFeatureUtilTest
+        - name: 'Run WFSGetFeatureControllerTest (Spring Boot) with Maven'
+          run: mvn test -Dtest=WFSGetFeatureControllerTest

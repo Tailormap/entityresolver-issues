@@ -36,7 +36,8 @@ public class WFSGetFeatureUtil {
 
     /**
      * Get 1 feature from a WFS service using the provided filter.
-     * @param typeName the featture type name
+     *
+     * @param typeName the feature type name
      * @param cqlFilter an optional filter, may be @{code null}
      * @return a map of the attributes, keyed with attribute name, geometry value is omitted
      * @throws CQLException when filter parsing fails

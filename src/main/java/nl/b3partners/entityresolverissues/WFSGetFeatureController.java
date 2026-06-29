@@ -16,6 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * A REST controller that gets a single feature from a WFS service using a CQL filter. The feature attributes are
+ * returned as a JSON object, with the geometry attribute value omitted. The parameters for the WFS requests are
+ * hardcoded.
+ */
 @RestController
 @RequestMapping(path = "/wfs", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WFSGetFeatureController {
@@ -28,6 +33,13 @@ public class WFSGetFeatureController {
             "https://snapshot.tailormap.nl/geoserver/ows?service=WFS&acceptversions=2.0.0&request=GetCapabilities";
     private static final String TM_WFS_TYPE_NAME = "postgis:bak";
 
+    /**
+     * get a "provincie" feature.
+     *
+     * @return the feature attributes as a JSON encoded map, with the geometry attribute value omitted
+     * @throws IOException when WFS request fails
+     * @throws CQLException when filter parsing fails
+     */
     @RequestMapping(
             method = {GET, POST},
             path = "/provincie")
@@ -41,6 +53,13 @@ public class WFSGetFeatureController {
         }
     }
 
+    /**
+     * Get a "bak" feature.
+     *
+     * @return the feature attributes as a JSON encoded map, with the geometry attribute value omitted
+     * @throws IOException when WFS request fails
+     * @throws CQLException when filter parsing fails
+     */
     @RequestMapping(
             method = {GET, POST},
             path = "/bak")
