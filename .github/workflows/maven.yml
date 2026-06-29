@@ -41,6 +41,9 @@ jobs:
         run: mvn test -Dtest=WFSGetFeatureUtilTest
 
   test_two:
+    name: 'Run Spring Boot test with Maven'
+    needs: build
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - name: 'Set up JDK'
@@ -49,8 +52,5 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           cache: 'maven'
-    name: 'Run Spring Boot test with Maven'
-    needs: build
-    runs-on: ubuntu-latest
-       - name: 'Run WFSGetFeatureControllerTest'
-       run: mvn test -Dtest=WFSGetFeatureControllerTest
+      - name: 'Run WFSGetFeatureControllerTest'
+        run: mvn test -Dtest=WFSGetFeatureControllerTest
