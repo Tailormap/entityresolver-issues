@@ -1,0 +1,31 @@
+name: Maven Build
+env:
+  MAVEN_OPTS: -Djava.awt.headless=true
+  MAVEN_VERSION: '3.9.16'
+  JAVA_VERSION: '17'
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+    build:
+      name: Build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v7
+        - name: 'Set up JDK'
+          uses: actions/setup-java@v5
+          with:
+            java-version: ${{ env.JAVA_VERSION }}
+            distribution: 'temurin'
+            cache: 'maven'
+        - name: 'Set up Maven'
+          uses: stCarolas/setup-maven@v5.1
+          with:
+            maven-version: ${{ env.MAVEN_VERSION }}
+        - name: 'Build with Maven'
+          run: mvn clean install
