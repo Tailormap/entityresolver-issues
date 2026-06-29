@@ -1,7 +1,6 @@
 name: Maven Build
 env:
   MAVEN_OPTS: -Djava.awt.headless=true
-  MAVEN_VERSION: '3.9.16'
   JAVA_VERSION: '17'
 
 on:
@@ -12,25 +11,46 @@ on:
   workflow_dispatch:
 
 jobs:
-    build:
-      name: Build
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v7
-        - name: 'Set up JDK'
-          uses: actions/setup-java@v5
-          with:
-            java-version: ${{ env.JAVA_VERSION }}
-            distribution: 'temurin'
-            cache: 'maven'
-        - name: 'Set up Maven'
-          uses: stCarolas/setup-maven@v5.1
-          with:
-            maven-version: ${{ env.MAVEN_VERSION }}
-        - name: 'Build with Maven'
-          run: mvn clean install -DskipTests
-        - name: 'Run WFSGetFeatureUtilTest with Maven'
-          continue-on-error: true
-          run: mvn test -Dtest=WFSGetFeatureUtilTest
-        - name: 'Run WFSGetFeatureControllerTest (Spring Boot) with Maven'
-          run: mvn test -Dtest=WFSGetFeatureControllerTest
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: 'Build with Maven'
+        run: mvn install -DskipTests=true
+
+  test_one:
+    name: 'Run JUnit test with Maven'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: 'Run WFSGetFeatureUtilTest'
+        run: mvn test -Dtest=WFSGetFeatureUtilTest
+
+  test_two:
+    steps:
+      - uses: actions/checkout@v7
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'maven'
+    name: 'Run Spring Boot test with Maven'
+    needs: build
+    runs-on: ubuntu-latest
+       - name: 'Run WFSGetFeatureControllerTest'
+       run: mvn test -Dtest=WFSGetFeatureControllerTest
