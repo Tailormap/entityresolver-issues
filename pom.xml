@@ -39,7 +39,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.outputTimestamp>2026-06-29T13:21:00Z</project.build.outputTimestamp>
-        <geotools.version>35-RC</geotools.version>
+        <geotools.version>35.0</geotools.version>
     </properties>
     <repositories>
         <repository>
